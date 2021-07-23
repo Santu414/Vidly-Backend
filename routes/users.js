@@ -2,10 +2,12 @@ const Joi = require("joi");
 const _ = require("lodash");
 const express = require("express");
 const bcrypt = require("bcrypt");
-
-const router = express.Router();
+const config = require("config");
+const jwt = require("jsonwebtoken");
 
 const { User, validate } = require("../models/user");
+
+const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { error } = validate(req.body);
@@ -20,7 +22,10 @@ router.post("/", async (req, res) => {
 
   await user.save();
 
-  res.send(_.pick(user, ["_id", "name", "email"]));
+  const token = jwt.sign({ _id: user._id }, config.get("jwtPrivateKey"));
+  res
+    .header("x-auth-token", token)
+    .send(_.pick(user, ["_id", "name", "email"]));
 });
 
 module.exports = router;
