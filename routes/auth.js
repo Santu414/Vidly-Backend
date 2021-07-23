@@ -3,6 +3,7 @@ const _ = require("lodash");
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const config = require("config");
 
 const router = express.Router();
 
@@ -21,7 +22,7 @@ router.post("/", async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
 
-  const token = jwt.sign({ _id: user._id }, "jwtPrivateKey");
+  const token = jwt.sign({ _id: user._id }, config.get("jwtPrivateKey"));
 
   res.send(token);
 });
