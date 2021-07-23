@@ -2,6 +2,7 @@ const Joi = require("joi");
 const _ = require("lodash");
 const express = require("express");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const router = express.Router();
 
@@ -20,7 +21,9 @@ router.post("/", async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
 
-  res.send(true);
+  const token = jwt.sign({ _id: user._id }, "jwtPrivateKey");
+
+  res.send(token);
 });
 
 function validate(req) {
