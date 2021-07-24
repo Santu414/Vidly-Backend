@@ -16,6 +16,22 @@ const error = require("./middleware/error");
 
 const app = express();
 
+process.on("uncoughtException", (ex) => {
+  winston.error(ex.message, ex);
+  process.exit(1);
+});
+
+winston.handleExceptions(
+  new winston.add(winston.transports.File, {
+    filename: "uncoughtException.log",
+  })
+);
+
+process.on("unhandleRejection", (ex) => {
+  winston.error(ex.message, ex);
+  process.exit(1);
+});
+
 winston.add(winston.transports.File, { filename: "logfile.log" });
 winston.add(winston.transports.MongoDB, {
   db: "mongodb://localhost/vidly",
